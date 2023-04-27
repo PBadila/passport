@@ -1,6 +1,10 @@
 const express = require('express')
 const router = express.Router();
 
+//adds the authentication to the route
+const { authenticate } = require("../middlewares/auth")
+
+
 //Add resource-specific routes here
 
 //this line imports 3 objects from the models module using DESTRUCTURING ASSIGNMENT so that they can be used in the current code file. Imports like this serve to make these objects and everything that is defined with them (their properties and methods) available to the code in this file - so if we were to reference the Basket object without this import, when we run it, the system would be like THIS IS UNDEFINED
@@ -8,7 +12,8 @@ const { Basket, BasketItem, Item } = require('../models')
 
 
 // Create a new basket using the BASKET model/class and the data provided in the request body
-router.post('/', async (req, res) => { //route handler definition for the HTTP POST method with endpoint / , everything in the {} is our asynchronous function that takes in 2 parameters, req (request) and res (response) -- an asynchronous funtion is a non-blocking execution of code that enables JavaScript to perform multiple tasks without blocking the rest of the code, vs code being executed synchronously, where it waits for each operation to complete before moving on to the next one 
+router.post("/", authenticate, async (req, res) => {
+//router.post('/', async (req, res) => { //route handler definition for the HTTP POST method with endpoint / , everything in the {} is our asynchronous function that takes in 2 parameters, req (request) and res (response) -- an asynchronous funtion is a non-blocking execution of code that enables JavaScript to perform multiple tasks without blocking the rest of the code, vs code being executed synchronously, where it waits for each operation to complete before moving on to the next one 
     try {
       const basket = await Basket.create(req.body);
       //creates a new basket using the Basket model CLASS (remember classes???) and based on the data in the req.body object (the info the user entered in)...AWAIT is used to wait for the create method to complete before moving to the next line
@@ -22,6 +27,7 @@ router.post('/', async (req, res) => { //route handler definition for the HTTP P
     }
     //The try catch block is used to handle errors that may occur during the execution of the code --> try: do this if successful and catch: do this if an error occurs
   });
+//})
 
 
   // Get all baskets, including associated items
@@ -46,6 +52,7 @@ router.get('/', async (req, res) => {
     }
   });
 
+
   // Get a specific basket by ID, including associated items
 router.get('/:id', async (req, res) => {
     try {
@@ -63,7 +70,8 @@ router.get('/:id', async (req, res) => {
   });
 
   // Update a basket by ID
-router.put('/:id', async (req, res) => {
+router.put("/:id", authenticate, async (req, res) => {
+//router.put('/:id', async (req, res) => {
     try {
       const [updated] = await Basket.update(req.body, {
         where: { id: req.params.id },
@@ -81,7 +89,7 @@ router.put('/:id', async (req, res) => {
   });
 
   // Delete a basket by ID
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticate, async (req, res) => {
     try {
       const deleted = await Basket.destroy({
         where: { id: req.params.id },

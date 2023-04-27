@@ -5,6 +5,7 @@ const passport = require("passport");
 const { User } = require("../models");
 
 router.post("/register", async (req, res) => {
+  console.log("auth page working")
   const { username, password } = req.body;
   if (!username || !password) {
     return res

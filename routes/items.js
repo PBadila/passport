@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
+//adds the authentication to the route
+const { authenticate } = require("../middlewares/auth")
+
 // Add your resource-specific routes here
 const { Basket, BasketItem, Item } = require('../models');
 
 // Create a new item
-router.post('/', async (req, res) => {
+router.post('/', authenticate, async (req, res) => {
   try {
     const item = await Item.create(req.body);
     res.status(201).json(item);
@@ -43,7 +46,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Update an item by ID
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticate, async (req, res) => {
   try {
     const [updated] = await Item.update(req.body, {
       where: { id: req.params.id },
@@ -61,7 +64,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete an item by ID
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticate, async (req, res) => {
   try {
     const deleted = await Item.destroy({
       where: { id: req.params.id },
